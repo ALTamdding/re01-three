@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>中国传统日历 | 中华节日大全</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        body {
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        /* 顶部栏 */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #cccccc;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333333;
+        }
+        .search-box {
+            width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            background-color: #f5f5f5;
+            display: flex;
+            gap: 25px;
+            padding: 10px 20px;
+        }
+        .nav-bar a {
+            color: #333333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* 主体布局 */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 120px);
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f8f8f8;
+            border-right: 1px solid #cccccc;
+            padding: 20px;
+        }
+        .sidebar h3 {
+            font-size: 15px;
+            margin-bottom: 15px;
+            color: #333333;
+        }
+        .sidebar ul {
+            list-style: none;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar a {
+            display:block;
+            color: #333333;
+            text-decoration: none;
+            font-size: 14px;
+            padding:6px 8px;
+            border-radius:4px;
+        }
+        .sidebar a:hover,.sidebar a.active {
+            color: #ffffff;
+            background-color: #666666;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 20px;
+        }
+        .content-title {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #cccccc;
+            padding-bottom: 10px;
+        }
+
+        /* 日历控制 */
+        .month-controller {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .month-controller button {
+            padding: 6px 16px;
+            border: 1px solid #999;
+            background: #f5f5f5;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .week-header{
+            display: grid;
+            margin-top: 10px;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            margin-bottom:8px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+        .calendar-day {
+            border: 1px solid #cccccc;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .calendar-day:hover {
+            background-color: #eeeeee;
+            border-color: #999999;
+        }
+        .calendar-day.today {
+            background-color: #666666;
+            color: #ffffff;
+        }
+        .calendar-day.festival-day {
+            background-color: #f0f0f0;
+            border-color: #999999;
+            font-weight: bold;
+        }
+        .empty-day{
+            background:#f9f9f9;
+            cursor:default;
+        }
+
+        .detail-card {
+            background-color: #fff;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .memorial-card {
+            background-color: #fff;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            padding: 20px;
+        }
+        .memorial-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .del-btn{
+            background:#eeeeee;
+            color:#333;
+            border:1px solid #999;
+            padding:3px 8px;
+            border-radius:3px;
+            cursor:pointer;
+        }
+        .add-memorial{
+            margin-top:15px;
+            display:flex;
+            gap:10px;
+        }
+        .add-memorial input{
+            padding:6px;
+            border:1px solid #cccccc;
+            border-radius:4px;
+        }
+        .add-btn{
+            background:#f5f5f5;
+            color:#333;
+            border:1px solid #999;
+            padding:6px 12px;
+            border-radius:4px;
+            cursor:pointer;
+        }
+
+        .page{
+            display: none;
+        }
+        .page.active{
+            display: block;
+        }
+
+        /* 卡片网格布局（和菜鸟教程一样） */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .card-item {
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .card-item:hover {
+            background-color: #f8f8f8;
+            border-color: #999;
+        }
+        .card-item h4 {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .card-item p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-header">
+        <div class="logo">中国传统日历</div>
+        <input type="text" class="search-box" placeholder="搜索节日、节气、宜忌...">
+    </div>
+
+    <div class="nav-bar">
+        <a href="#">首页</a>
+        <a href="#">传统节日</a>
+        <a href="#">二十四节气</a>
+        <a href="#">黄历宜忌</a>
+        <a href="#">万年历查询</a>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <h3>全部功能</h3>
+            <ul>
+                <li><a class="menu-link active" data-page="home">日历</a></li>
+                <li><a class="menu-link" data-page="festival">中国节日大全</a></li>
+                <li><a class="menu-link" data-page="solar">二十四节气详解</a></li>
+                <li><a class="menu-link" data-page="intangible">国家级非遗文化遗产</a></li>
+                <li><a class="menu-link" data-page="holiday">法定节假日安排</a></li>
+                <li><a class="menu-link" data-page="custom">传统习俗科普</a></li>
+                <li><a class="menu-link" data-page="huangli">黄历宜忌查询</a></li>
+            </ul>
+        </div>
+
+        <div class="content-area">
+            <!-- 日历首页 -->
+            <div class="page active" id="home">
+                <div class="content-title" id="yearMonthTitle"></div>
+
+                <div class="month-controller">
+                    <button id="prevMonth">← 上个月</button>
+                    <span id="nowYM"></span>
+                    <button id="nextMonth">下个月 →</button>
+                </div>
+
+                <div class="week-header">
+                    <span>日</span>
+                    <span>一</span>
+                    <span>二</span>
+                    <span>三</span>
+                    <span>四</span>
+                    <span>五</span>
+                    <span>六</span>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid"></div>
+
+                <div class="detail-card" id="detailCard">
+                    <h4>请点击上方日期查看详情</h4>
+                    <p>公历：-</p>
+                    <p>农历：-</p>
+                    <p>节气/节日：-</p>
+                    <p>节日习俗：-</p>
+                    <p>宜：-</p>
+                    <p>忌：-</p>
+                    <p>穿搭建议：-</p>
+                </div>
+
+                <div class="content-title">我的纪念日（可自行添加删除）</div>
+                <div class="memorial-card" id="memorialList"></div>
+
+                <div class="add-memorial">
+                    <input type="text" id="memoName" placeholder="纪念日名称">
+                    <input type="date" id="memoDate">
+                    <button class="add-btn" id="addMemo">添加纪念日</button>
+                </div>
+            </div>
+
+            <!-- 中国节日大全（卡片布局） -->
+            <div class="page" id="festival">
+                <div class="content-title">中国节日完整分类体系</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <h4>二十四节气</h4>
+                        <p>被誉为“中国的第五大发明”，2016年列入联合国非遗名录，指导传统农业生产。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>法定节假日</h4>
+                        <p>元旦、春节、清明节、劳动节、端午节、中秋节、国庆节，部分公民放假含妇女节、青年节等。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>传统民俗节日</h4>
+                        <p>除夕、春节、元宵节、龙抬头、端午节、七夕节、中元节、中秋节、重阳节、腊八节。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>国家重大纪念日</h4>
+                        <p>植树节、护士节、建党节、教师节、记者节、抗战胜利纪念日、烈士纪念日等。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>少数民族特色节日</h4>
+                        <p>泼水节、火把节、那达慕大会、藏历新年、望果节、三月街等区域性特色节日。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 二十四节气详解（卡片布局） -->
+            <div class="page" id="solar">
+                <div class="content-title">二十四节气详解</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <h4>春季节气</h4>
+                        <p>立春、雨水、惊蛰、春分、清明、谷雨</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>夏季节气</h4>
+                        <p>立夏、小满、芒种、夏至、小暑、大暑</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>秋季节气</h4>
+                        <p>立秋、处暑、白露、秋分、寒露、霜降</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>冬季节气</h4>
+                        <p>立冬、小雪、大雪、冬至、小寒、大寒</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>节气文化意义</h4>
+                        <p>二十四节气是上古农耕文明的产物，被誉为“中国的第五大发明”，准确反映季节更替与气候变化。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 国家级非遗文化遗产（卡片布局） -->
+            <div class="page" id="intangible">
+                <div class="content-title">国家级非物质文化遗产</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <h4>节日类非遗</h4>
+                        <p>春节、端午节、中秋节、二十四节气均列入世界非物质文化遗产。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>传统技艺类</h4>
+                        <p>传统剪纸、皮影戏、京剧、中医针灸、端午节龙舟习俗等都是我国宝贵的文化财富。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>民俗文化类</h4>
+                        <p>传统节庆仪式、地方戏曲、民间信仰等，承载着中华民族的文化精神。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 法定节假日（卡片布局） -->
+            <div class="page" id="holiday">
+                <div class="content-title">中国法定节假日安排</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <h4>全体公民放假</h4>
+                        <p>元旦、春节、清明节、劳动节、端午节、中秋节、国庆节。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>部分公民放假</h4>
+                        <p>妇女节、青年节、儿童节、建军节，对应特定人群放假半天。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>调休说明</h4>
+                        <p>国家会根据每年实际情况发布调休安排，方便民众出行与团聚。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 传统习俗科普（全部节日补齐） -->
+            <div class="page" id="custom">
+                <div class="content-title">中华传统习俗科普</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <h4>元旦（1月1日）</h4>
+                        <p>公历新年开端，举国放假、举办迎新活动，辞旧迎新展望新年。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>妇女节（3月8日）</h4>
+                        <p>纪念妇女权益，表彰女性贡献，多地会举办慰问与公益活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>植树节（3月12日）</h4>
+                        <p>全民植树造林、绿化环境，倡导爱护自然、保护生态。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>劳动节（5月1日）</h4>
+                        <p>致敬劳动人民，举国放假，各地举办劳动表彰、游园活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>青年节（5月4日）</h4>
+                        <p>纪念五四运动，弘扬爱国精神，青年开展主题团日活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>护士节（5月12日）</h4>
+                        <p>纪念南丁格尔，表彰医护人员，弘扬无私奉献的医者精神。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>儿童节（6月1日）</h4>
+                        <p>儿童欢庆节日，学校举办文艺汇演、游园、亲子活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>建党节（7月1日）</h4>
+                        <p>纪念中国共产党诞生，举行党史学习、重温入党誓词等活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>建军节（8月1日）</h4>
+                        <p>缅怀军人功绩，拥军优属，开展军营开放、慰问官兵活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>教师节（9月10日）</h4>
+                        <p>尊师重教，学生感恩教师，举办表彰大会与感恩活动。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>国庆节（10月1日）</h4>
+                        <p>举国欢庆祖国诞辰，升国旗、阅兵、游园、家庭出游。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>冬至</h4>
+                        <p>北方吃饺子，南方吃汤圆，阖家团聚进补养生。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 黄历宜忌（卡片布局） -->
+            <div class="page" id="huangli">
+                <div class="content-title">黄历宜忌科普</div>
+                <div class="card-grid">
+                    <div class="card-item">
+                        <h4>【宜】类事项</h4>
+                        <p>祭祀、祈福、出行、纳财、安床、嫁娶、开市、动土等。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>【忌】类事项</h4>
+                        <p>动土、嫁娶、破土、搬家、远行、安葬、入宅等。</p>
+                    </div>
+                    <div class="card-item">
+                        <h4>文化参考意义</h4>
+                        <p>老黄历源自古代历法，是古人生活智慧的总结参考，并非绝对的行为准则。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 侧边栏菜单切换
+        const menuLinks = document.querySelectorAll('.menu-link');
+        const pages = document.querySelectorAll('.page');
+        menuLinks.forEach(link=>{
+            link.onclick = function(){
+                menuLinks.forEach(m=>m.classList.remove('active'));
+                pages.forEach(p=>p.classList.remove('active'));
+                this.classList.add('active');
+                const target = this.dataset.page;
+                document.getElementById(target).classList.add('active');
+            }
+        });
+
+
+        let now = new Date();
+        let currentYear = now.getFullYear();
+        let currentMonth = now.getMonth();
+
+        const monthDays = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+        // 完整公历节日+对应习俗
+        const festivalData = {
+            "1-1":{name:"元旦",desc:"公历新年开端，举国放假、举办迎新活动，辞旧迎新展望新年。"},
+            "3-8":{name:"妇女节",desc:"纪念妇女权益，表彰女性贡献，多地会举办慰问与公益活动。"},
+            "3-12":{name:"植树节",desc:"全民植树造林、绿化环境，倡导爱护自然、保护生态。"},
+            "5-1":{name:"劳动节",desc:"致敬劳动人民，举国放假，各地举办劳动表彰、游园活动。"},
+            "5-4":{name:"青年节",desc:"纪念五四运动，弘扬爱国精神，青年开展主题团日活动。"},
+            "5-12":{name:"护士节",desc:"纪念南丁格尔，表彰医护人员，弘扬无私奉献的医者精神。"},
+            "6-1":{name:"儿童节",desc:"儿童欢庆节日，学校举办文艺汇演、游园、亲子活动。"},
+            "7-1":{name:"建党节",desc:"纪念中国共产党诞生，举行党史学习、重温入党誓词等活动。"},
+            "8-1":{name:"建军节",desc:"缅怀军人功绩，拥军优属，开展军营开放、慰问官兵活动。"},
+            "9-3":{name:"抗战胜利纪念日",desc:"缅怀革命先烈，铭记历史，弘扬爱国主义精神。"},
+            "9-10":{name:"教师节",desc:"尊师重教，学生感恩教师，举办表彰大会与感恩活动。"},
+            "9-30":{name:"烈士纪念日",desc:"缅怀革命烈士，举行公祭仪式，传承英雄精神。"},
+            "10-1":{name:"国庆节",desc:"举国欢庆祖国诞辰，升国旗、阅兵、游园、家庭出游。"},
+            "11-8":{name:"记者节",desc:"致敬新闻工作者，弘扬客观真实的新闻职业精神。"},
+            "12-4":{name:"国家宪法日",desc:"普及宪法知识，增强全民法治观念，开展普法宣传。"},
+            "12-13":{name:"国家公祭日",desc:"悼念南京大屠杀死难者，铭记历史、珍爱和平。"}
+        };
+
+        const lunarBase = {
+            info:[
+                {lunar:"正月",yi:"祈福 迎春",ji:"动土",wear:"简约素雅服饰"},
+                {lunar:"二月",yi:"踏青 出行",ji:"嫁娶",wear:"清新休闲装束"},
+                {lunar:"三月",yi:"祭祀 赏花",ji:"破土",wear:"素雅浅色衣物"},
+                {lunar:"四月",yi:"纳财 开市",ji:"安床",wear:"透气轻薄夏装"},
+                {lunar:"五月",yi:"驱邪 祈福",ji:"远行",wear:"清爽防晒穿搭"},
+                {lunar:"六月",yi:"修造 打扫",ji:"入宅",wear:"简约清凉穿搭"},
+                {lunar:"七月",yi:"许愿 祈福",ji:"搬迁",wear:"浅色系日常衣服"},
+                {lunar:"八月",yi:"团圆 赏月",ji:"争吵",wear:"雅致简约穿搭"},
+                {lunar:"九月",yi:"登高 敬老",ji:"嫁娶",wear:"秋日日常装束"},
+                {lunar:"十月",yi:"纳福 安宅",ji:"出行",wear:"保暖休闲服装"},
+                {lunar:"冬月",yi:"静修 祈福",ji:"动土",wear:"防寒保暖穿搭"},
+                {lunar:"腊月",yi:"除尘 纳福",ji:"搬家",wear:"端庄朴素冬装"}
+            ]
+        };
+
+        let memorialDays = JSON.parse(localStorage.getItem("memorials")) || [
+            {name: "我的生日", date: "2026-03-13"},
+            {name: "毕业纪念日", date: "2026-06-30"}
+        ];
+
+        // 渲染日历
+        function renderCalendar(y,m){
+            const grid = document.getElementById("calendarGrid");
+            grid.innerHTML = "";
+            document.getElementById("nowYM").innerText = `${y}年${m+1}月`;
+            document.getElementById("yearMonthTitle").innerText = `${y}年${m+1}月 日历`;
+
+            let firstDay = new Date(y,m,1).getDay();
+            let days = monthDays[m];
+            if(m===1 && (y%4===0&&y%100!==0 || y%400===0)) days=29;
+
+            for(let i=0;i<firstDay;i++){
+                let empty = document.createElement("div");
+                empty.className = "calendar-day empty-day";
+                grid.appendChild(empty);
+            }
+
+            let today = new Date();
+            for(let d=1;d<=days;d++){
+                let dayDom = document.createElement("div");
+                dayDom.className = "calendar-day";
+                if(today.getFullYear()===y && today.getMonth()===m && today.getDate()===d){
+                    dayDom.classList.add("today");
+                }
+                let key = `${m+1}-${d}`;
+                if(festivalData[key]){
+                    dayDom.classList.add("festival-day");
+                }
+                dayDom.innerText = d;
+                dayDom.onclick = ()=>showDateDetail(y,m,d);
+                grid.appendChild(dayDom);
+            }
+        }
+
+        function showDateDetail(y,m,d){
+            let idx = m;
+            let data = lunarBase.info[idx];
+            let key = `${m+1}-${d}`;
+            let festival = festivalData[key];
+
+            let festivalName = festival ? festival.name : "无";
+            let festivalDesc = festival ? festival.desc : "暂无相关习俗";
+
+            const card = document.getElementById("detailCard");
+            card.innerHTML = `
+                <h4>公历：${y}年${m+1}月${d}日</h4>
+                <p>农历：丙午年${data.lunar}</p>
+                <p>节气/节日：${festivalName}</p>
+                <p>节日习俗：${festivalDesc}</p>
+                <p>宜：${data.yi}</p>
+                <p>忌：${data.ji}</p>
+                <p>穿搭建议：${data.wear}</p>
+            `;
+        }
+
+        // 渲染纪念日
+        function initMemorial(){
+            const list = document.getElementById("memorialList");
+            list.innerHTML = "";
+            let today = new Date();
+            today.setHours(0,0,0,0);
+            memorialDays.forEach((item,index)=>{
+                let target = new Date(item.date);
+                let diff = Math.ceil( (target-today) / (1000*60*60*24) );
+                let div = document.createElement("div");
+                div.className = "memorial-item";
+                let text = "";
+                if(diff>0){
+                    text = `<strong>${item.name}</strong>：距离还有 ${diff} 天`;
+                }else if(diff===0){
+                    text = `<strong>${item.name}</strong>：✨就是今天！`;
+                }else{
+                    text = `<strong>${item.name}</strong>：已过去 ${Math.abs(diff)} 天`;
+                }
+                div.innerHTML = text + `<button class="del-btn" data-index="${index}">删除</button>`;
+                list.appendChild(div);
+            });
+
+            document.querySelectorAll(".del-btn").forEach(btn=>{
+                btn.onclick = function(){
+                    let idx = this.dataset.index;
+                    memorialDays.splice(idx,1);
+                    localStorage.setItem("memorials",JSON.stringify(memorialDays));
+                    initMemorial();
+                };
+            });
+        }
+
+        // 添加纪念日
+        document.getElementById("addMemo").onclick = function(){
+            let name = document.getElementById("memoName").value.trim();
+            let date = document.getElementById("memoDate").value;
+            if(!name||!date){
+                alert("请填写完整纪念日信息！");
+                return;
+            }
+            memorialDays.push({name,date});
+            localStorage.setItem("memorials",JSON.stringify(memorialDays));
+            document.getElementById("memoName").value = "";
+            initMemorial();
+        };
+
+        // 月份切换
+        document.getElementById("prevMonth").onclick = ()=>{
+            currentMonth--;
+            if(currentMonth<0){
+                currentMonth=11;
+                currentYear--;
+            }
+            renderCalendar(currentYear,currentMonth);
+        };
+        document.getElementById("nextMonth").onclick = ()=>{
+            currentMonth++;
+            if(currentMonth>11){
+                currentMonth=0;
+                currentYear++;
+            }
+            renderCalendar(currentYear,currentMonth);
+        };
+
+        // 初始化
+        renderCalendar(currentYear,currentMonth);
+        initMemorial();
+    </script>
+</body>
+</html>
